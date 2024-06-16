@@ -63,7 +63,7 @@ export const useSearchVideos = (args?: { query: string; size?: number }) => {
     queryKey: ["search", query],
     queryFn: async () => {
       if (queryRef.current !== query) {
-        setPage(1);
+        setPage(0);
         setVideos([]);
       }
       if (!query) return [];
