@@ -104,7 +104,7 @@ const Videos = () => {
         {videos.map((video, index) => (
           <div
             ref={index === videos.length - 1 ? lastItemRef : null}
-            key={JSON.stringify(video)}
+            key={JSON.stringify(video) + index}
           >
             <Video video={video} />
           </div>
