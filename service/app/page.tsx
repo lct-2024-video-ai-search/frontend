@@ -1,11 +1,10 @@
 import { SearchBar } from "@/components/entities/search-bar";
 import { Videos } from "@/components/entities/videos";
-import Logo from "@/shared/images/Logo";
-import Image from "next/image";
+import { Logo } from "@/shared/images/logo";
 
 export default function Home() {
   return (
-    <main className="w-full flex flex-col items-center">
+    <main className="w-full flex  flex-col items-center">
       <div className="mb-[2rem]">
         <Logo />
       </div>

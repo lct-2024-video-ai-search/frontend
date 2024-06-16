@@ -1,36 +1,118 @@
-const links = [
-  "https://cdn-st.rutubelist.ru/media/39/6c/b31bc6864bef9d8a96814f1822ca/fhd.mp4",
-  "https://cdn-st.rutubelist.ru/media/2f/4f/6b969c8c4a2aafcfca057b2a99a2/fhd.mp4",
-  "https://cdn-st.rutubelist.ru/media/87/43/b11df3f344d0af773aac81e410ee/fhd.mp4",
-  "https://cdn-st.rutubelist.ru/media/d1/e7/642dc2194fcdb69664f832d5f2dd/fhd.mp4",
-  "https://cdn-st.rutubelist.ru/media/a3/9f/2352de2748b3868df583d51a402b/fhd.mp4",
-  "https://cdn-st.rutubelist.ru/media/bf/6a/f040f0dd4afc90b8eb12c8d76571/fhd.mp4",
-];
+"use client";
 
-const Video = (props: { src: string }) => {
+import { useSearchVideos } from "@/lib/hooks";
+import { useVideosProvider } from "@/lib/providers";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { DialogHeader } from "../ui/dialog";
+import { VideoType } from "@/lib/types";
+
+const PlayIcon = () => {
   return (
-    <div className="overflow-hidden rounded-[0.75rem]">
-      <video controls>
-        <source src={props.src} type="video/mp4" />
+    <svg
+      fill="currentColor"
+      height="24"
+      role="img"
+      viewBox="0 0 24 24"
+      width="24"
+    >
+      <path d="M5.888 22.5a3.46 3.46 0 0 1-1.721-.46l-.003-.002a3.451 3.451 0 0 1-1.72-2.982V4.943a3.445 3.445 0 0 1 5.163-2.987l12.226 7.059a3.444 3.444 0 0 1-.001 5.967l-12.22 7.056a3.462 3.462 0 0 1-1.724.462Z"></path>
+    </svg>
+  );
+};
+
+const Video = (props: { video: VideoType }) => {
+  const { setSelectedVideo } = useVideosProvider();
+  return (
+    <button
+      onClick={() => setSelectedVideo(props.video)}
+      style={{
+        aspectRatio: 468 / 832,
+        width: "100%",
+      }}
+      className="overflow-hidden rounded-[0.75rem] relative hover:scale-105 transform 
+    transition duration-300"
+    >
+      <div className="absolute w-full h-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 grid place-items-center">
+        <div className="bg-black/50 grid place-items-center w-10 h-10 rounded-full">
+          <PlayIcon />
+        </div>
+      </div>
+      <video>
+        <source src={props.video.link} type="video/mp4" />
       </video>
-    </div>
+    </button>
+  );
+};
+
+const VideoModal = () => {
+  const { selectedVideo, setSelectedVideo } = useVideosProvider();
+
+  return (
+    <Dialog open={!!selectedVideo} onOpenChange={() => setSelectedVideo(null)}>
+      <DialogContent className="p-0">
+        {selectedVideo && (
+          <video loop autoPlay>
+            <source src={selectedVideo.link} type="video/mp4" />
+          </video>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 };
 
 const Videos = () => {
+  const { searchString } = useVideosProvider();
+  const { videos, loadMore } = useSearchVideos({
+    query: searchString,
+    size: 12,
+  });
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+
+  const observer = useRef<IntersectionObserver | null>(null);
+  const lastItemRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          loadMore();
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore, loadMore]
+  );
+
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-        gap: "1rem",
-      }}
-      className="w-full"
-    >
-      {links.map((link, index) => (
-        <Video src={link} key={index} />
-      ))}
-    </div>
+    <>
+      <VideoModal />
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))",
+          gap: "1rem",
+        }}
+        className="w-full"
+      >
+        {videos.map((video, index) => (
+          <div
+            ref={index === videos.length - 1 ? lastItemRef : null}
+            key={video.link}
+          >
+            <Video video={video} />
+          </div>
+        ))}
+      </div>
+    </>
   );
 };
 
