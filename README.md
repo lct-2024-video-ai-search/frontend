@@ -2,6 +2,8 @@
 
 ## Клиентская часть сервиса по поиску видео
 
+Доступен по адресу [https://zvezdolet.ddns.net](https://zvezdolet.ddns.net)
+
 Стэк:
 
 - NextJS – React-фреймворк
