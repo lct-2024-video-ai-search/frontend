@@ -56,7 +56,7 @@ export const useFetchDzenSuggestions = (query: string) => {
 export const useSearchVideos = (args?: { query: string; size?: number }) => {
   const [page, setPage] = useState<number>(0);
   const { query: propsQuery, size = 8 } = args || {};
-  const query = useMemo(() => propsQuery || "природа", [propsQuery]);
+  const query = useMemo(() => propsQuery || "", [propsQuery]);
   const [videos, setVideos] = useState<VideoType[]>([]);
   const queryRef = useRef(query);
   const { data, ...rest } = useQuery({
@@ -66,7 +66,6 @@ export const useSearchVideos = (args?: { query: string; size?: number }) => {
         setPage(0);
         setVideos([]);
       }
-      if (!query) return [];
       const response = await fetch(`${BACKEND_URL}/search?text=${query}`);
 
       return response.json() as Promise<VideoType[]>;

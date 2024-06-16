@@ -2,15 +2,8 @@
 
 import { useSearchVideos } from "@/lib/hooks";
 import { useVideosProvider } from "@/lib/providers";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { DialogHeader } from "../ui/dialog";
 import { VideoType } from "@/lib/types";
 
 const PlayIcon = () => {
@@ -53,15 +46,20 @@ const Video = (props: { video: VideoType }) => {
 
 const VideoModal = () => {
   const { selectedVideo, setSelectedVideo } = useVideosProvider();
+  const ref = useRef<HTMLVideoElement | null>(null);
 
   return (
     <Dialog open={!!selectedVideo} onOpenChange={() => setSelectedVideo(null)}>
-      <DialogContent className="p-0">
-        {selectedVideo && (
-          <video loop autoPlay>
-            <source src={selectedVideo.link} type="video/mp4" />
-          </video>
-        )}
+      <DialogContent
+        style={{
+          aspectRatio: 468 / 832,
+          display: "grid",
+        }}
+        className="p-0"
+      >
+        <video ref={ref} width="100%" height="100%" autoPlay playsInline>
+          <source src={selectedVideo?.link} type="video/mp4" />
+        </video>
       </DialogContent>
     </Dialog>
   );
