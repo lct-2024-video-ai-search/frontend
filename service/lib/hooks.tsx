@@ -54,7 +54,7 @@ export const useFetchDzenSuggestions = (query: string) => {
 };
 
 export const useSearchVideos = (args?: { query: string; size?: number }) => {
-  const [page, setPage] = useState<number>(1);
+  const [page, setPage] = useState<number>(0);
   const { query: propsQuery, size = 8 } = args || {};
   const query = useMemo(() => propsQuery || "природа", [propsQuery]);
   const [videos, setVideos] = useState<VideoType[]>([]);
