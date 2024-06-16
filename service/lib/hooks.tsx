@@ -59,27 +59,25 @@ export const useSearchVideos = (args?: { query: string; size?: number }) => {
   const query = useMemo(() => propsQuery || "", [propsQuery]);
   const [videos, setVideos] = useState<VideoType[]>([]);
   const queryRef = useRef(query);
+  const dataRef = useRef<VideoType[]>([]);
   const { data, ...rest } = useQuery({
     queryKey: ["search", query],
     queryFn: async () => {
-      if (queryRef.current !== query) {
-        setPage(0);
-        setVideos([]);
-      }
+      setPage(0);
       const response = await fetch(`${BACKEND_URL}/search?text=${query}`);
-
-      return response.json() as Promise<VideoType[]>;
+      const data = response.json() as Promise<VideoType[]>;
+      setVideos((await data).slice(0, size));
+      return data;
     },
   });
 
   useEffect(() => {
-    if (data) {
-      setVideos((prev) => [
-        ...prev,
-        ...data.slice(page * size, (page + 1) * size),
-      ]);
-    }
-  }, [data, page, size]);
+    if (!data || page < 1) return;
+    setVideos((prev) => [
+      ...prev,
+      ...data.slice(page * size, (page + 1) * size),
+    ]);
+  }, [page, data, size]);
 
   useEffect(() => {
     queryRef.current = query;
