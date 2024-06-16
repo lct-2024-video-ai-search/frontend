@@ -1,6 +1,6 @@
 import { SearchBar } from "@/components/entities/search-bar";
 import { Videos } from "@/components/entities/videos";
-import { Logo } from "@/shared/images/logo";
+import { Logo } from "@/shared/images/main-logo";
 
 export default function Home() {
   return (
