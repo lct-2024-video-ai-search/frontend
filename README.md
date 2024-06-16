@@ -17,7 +17,14 @@
 NEXT_PUBLIC_BACKEND_URL=URL_HERE
 ```
 
-Поднять сервис можно через Docker командой:
+Для запуска в `dev` режиме:
+
+```sh
+yarn # для установки модулей
+yarn dev # для запуска
+```
+
+Поднять `production` сборку можно через Docker командой:
 
 ```sh
 docker compose up -d --build
